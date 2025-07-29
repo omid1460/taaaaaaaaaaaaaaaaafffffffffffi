@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Clone - نرم افزار کلون صدا</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e9ecef;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .col {
+            flex: 1;
+        }
+
+        .status {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .character-count {
+            text-align: left;
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .character-count.warning {
+            color: #856404;
+        }
+
+        .character-count.danger {
+            color: #721c24;
+        }
+
+        .audio-player {
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .profiles-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-info h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .profile-info small {
+            color: #6c757d;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .row {
+                flex-direction: column;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .volume-meter {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .volume-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-microphone-alt"></i> Voice Clone</h1>
+            <p>نرم افزار کلون صدا با هوش مصنوعی - پشتیبانی از 99% زبان‌های دنیا</p>
+        </div>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('record')">
+                    <i class="fas fa-record-vinyl"></i> ضبط صدا
+                </button>
+                <button class="tab" onclick="showTab('tts')">
+                    <i class="fas fa-volume-up"></i> تبدیل متن به گفتار
+                </button>
+                <button class="tab" onclick="showTab('profiles')">
+                    <i class="fas fa-user-circle"></i> پروفایل‌های صوتی
+                </button>
+                <button class="tab" onclick="showTab('settings')">
+                    <i class="fas fa-cog"></i> تنظیمات
+                </button>
+            </div>
+
+            <!-- Recording Tab -->
+            <div id="record" class="tab-content active">
+                <h2><i class="fas fa-microphone"></i> ضبط صدای شما</h2>
+                <p>برای ایجاد پروفایل صوتی، لطفاً صدای خود را به مدت 10-20 دقیقه ضبط کنید.</p>
+
+                <div class="form-group">
+                    <label class="form-label">نام پروفایل:</label>
+                    <input type="text" id="profileName" class="form-control" placeholder="نام پروفایل صوتی خود را وارد کنید">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">زبان:</label>
+                    <select id="recordLanguage" class="form-control">
+                        <option value="fa">فارسی (Persian)</option>
+                        <option value="en">انگلیسی (English)</option>
+                        <option value="ar">عربی (Arabic)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">مدت زمان ضبط: <span id="durationValue">10</span> دقیقه</label>
+                    <input type="range" id="duration" class="slider" min="1" max="20" value="10" 
+                           oninput="document.getElementById('durationValue').textContent = this.value">
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <button id="startRecord" class="btn btn-primary" onclick="startRecording()">
+                            <i class="fas fa-play"></i> شروع ضبط
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button id="stopRecord" class="btn btn-danger hidden" onclick="stopRecording()">
+                            <i class="fas fa-stop"></i> توقف ضبط
+                        </button>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div id="recordProgress" class="progress-fill"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">سطح صدا:</label>
+                    <div class="volume-meter">
+                        <div id="volumeLevel" class="volume-fill"></div>
+                    </div>
+                </div>
+
+                <div id="recordStatus" class="status status-info">آماده برای ضبط</div>
+
+                <hr style="margin: 30px 0;">
+
+                <h3><i class="fas fa-upload"></i> آپلود فایل صوتی</h3>
+                <p>یا می‌توانید فایل صوتی آماده خود را آپلود کنید.</p>
+
+                <div class="form-group">
+                    <input type="file" id="audioFile" class="form-control" accept="audio/*">
+                </div>
+
+                <button class="btn btn-secondary" onclick="uploadAudioFile()">
+                    <i class="fas fa-cloud-upload-alt"></i> آپلود فایل
+                </button>
+            </div>
+
+            <!-- Text to Speech Tab -->
+            <div id="tts" class="tab-content">
+                <h2><i class="fas fa-comments"></i> تبدیل متن به گفتار</h2>
+                <p>متن خود را وارد کنید و با صدای کلون شده خود بشنوید.</p>
+
+                <div class="form-group">
+                    <label class="form-label">انتخاب پروفایل صوتی:</label>
+                    <select id="voiceProfile" class="form-control">
+                        <option value="">لطفاً پروفایل را انتخاب کنید</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">متن (حداکثر 50,000 کاراکتر):</label>
+                    <textarea id="inputText" class="form-control textarea" 
+                              placeholder="متن خود را اینجا وارد کنید..." 
+                              oninput="updateCharacterCount()"></textarea>
+                    <div id="charCount" class="character-count">0 / 50,000 کاراکتر</div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label">زبان:</label>
+                        <select id="textLanguage" class="form-control">
+                            <option value="auto">تشخیص خودکار</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-secondary" onclick="detectLanguage()">
+                            <i class="fas fa-search"></i> تشخیص زبان
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label">سرعت: <span id="speedValue">1.0</span>x</label>
+                        <input type="range" id="speed" class="slider" min="0.5" max="2" step="0.1" value="1" 
+                               oninput="document.getElementById('speedValue').textContent = this.value">
+                    </div>
+                    <div class="col">
+                        <label class="form-label">زیر و بمی: <span id="pitchValue">1.0</span>x</label>
+                        <input type="range" id="pitch" class="slider" min="0.5" max="2" step="0.1" value="1" 
+                               oninput="document.getElementById('pitchValue').textContent = this.value">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">احساس:</label>
+                    <select id="emotion" class="form-control">
+                        <option value="neutral">خنثی</option>
+                        <option value="happy">شاد</option>
+                        <option value="sad">غمگین</option>
+                        <option value="angry">عصبانی</option>
+                        <option value="calm">آرام</option>
+                    </select>
+                </div>
+
+                <button id="generateBtn" class="btn btn-primary" onclick="generateSpeech()">
+                    <i class="fas fa-magic"></i> تولید گفتار
+                </button>
+
+                <div class="loading" id="ttsLoading">
+                    <div class="spinner"></div>
+                    <p>در حال تولید گفتار...</p>
+                </div>
+
+                <div id="ttsStatus"></div>
+
+                <audio id="audioPlayer" class="audio-player hidden" controls>
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+
+            <!-- Profiles Tab -->
+            <div id="profiles" class="tab-content">
+                <h2><i class="fas fa-users"></i> مدیریت پروفایل‌های صوتی</h2>
+                <p>مدیریت و کنترل پروفایل‌های صوتی ایجاد شده.</p>
+
+                <button class="btn btn-primary" onclick="loadProfiles()">
+                    <i class="fas fa-sync"></i> بروزرسانی لیست
+                </button>
+
+                <div id="profilesList" class="profiles-list">
+                    <div class="loading" id="profilesLoading">
+                        <div class="spinner"></div>
+                        <p>در حال بارگیری پروفایل‌ها...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <h2><i class="fas fa-cog"></i> تنظیمات</h2>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="autoUpdate"> بروزرسانی خودکار
+                    </label>
+                </div>
+
+                <button class="btn btn-secondary" onclick="checkForUpdates()">
+                    <i class="fas fa-download"></i> بررسی بروزرسانی
+                </button>
+
+                <div class="form-group">
+                    <label class="form-label">زبان رابط کاربری:</label>
+                    <select id="interfaceLanguage" class="form-control">
+                        <option value="fa">فارسی</option>
+                        <option value="en">English</option>
+                        <option value="ar">العربية</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">کیفیت صوتی:</label>
+                    <select id="audioQuality" class="form-control">
+                        <option value="high">بالا (22050 Hz)</option>
+                        <option value="medium">متوسط (16000 Hz)</option>
+                        <option value="low">پایین (8000 Hz)</option>
+                    </select>
+                </div>
+
+                <hr style="margin: 30px 0;">
+
+                <h3><i class="fas fa-info-circle"></i> درباره</h3>
+                <p><strong>نسخه:</strong> 1.0.0</p>
+                <p><strong>توسعه‌دهنده:</strong> Voice Clone Team</p>
+                <p><strong>مجوز:</strong> رایگان و متن‌باز</p>
+
+                <div id="settingsStatus"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Voice Clone Application - نرم افزار کلون صدا</p>
+            <p>ساخته شده با ❤️ برای پشتیبانی از تمام زبان‌های دنیا</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
